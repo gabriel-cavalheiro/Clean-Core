@@ -1,0 +1,29 @@
+Na construção de API custom e criação/modificações de documentos standard, priorizar o uso do BO interface (Business Object Interface) em vez da BAPI 
+
+https://api.sap.com/content-type/S4HANACloudBOInterface/onstackextensibility/bointerface  
+
+imagem
+
+Quando utilizar BAPI, deve ser gerado o WRAPPER 
+
+https://developers.sap.com/tutorials/abap-s4hanacloud-purchasereq-create-wrapper..html  
+
+https://community.sap.com/t5/technology-blog-posts-by-sap/how-to-generate-a-wrapper-for-function-modules-bapis-for-missing-released/ba-p/13692790  
+
+ 
+
+Dica para buscar o BO interface a partir da BAPI 
+
+ 
+imagem
+
+Quando houver necessidade de usar algum BAPI da uma conferida nesse ponto -> Normalmente eu verifico no Repositório  
+
+Neste caso ela não esta como not to be released, mais se verificar por aqui nas propriedade do objeto no eclipse 
+
+
+
+Indica o Behavior, acessando você consegue ver a documentação para uso  
+
+
+imagem
