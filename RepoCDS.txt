@@ -1,1 +1,6 @@
-https://sap.github.io/abap-atc-cr-cv-s4hc/ 
+Consultar se os objetos ABAP (tabelas/CDS views/BAPI, etc) estão Realesed para uso no ABAP cloud e qual o objeto sucessor decomendado pela SAP 
+
+
+https://sap.github.io/abap-atc-cr-cv-s4hc/  
+
+ 
