@@ -1,0 +1,25 @@
+Vamos continuar utilizando o Application Log (SLG1) normalmente!! O que mudou foi apenas como criamos o objeto e o sub-objeto. 
+
+  
+
+Antes, entravamos na SLG0 para cria-los. Hoje, criamos através do Eclipse.  
+
+  
+
+Há um objeto específico para Application Log. 
+
+Tutorial da SAP: Creating Application Log Objects | SAP Help Portal 
+
+  
+
+E para registrar a mensagem, tem criado a classe ZGLCL_LOG.  
+
+  
+
+Construtor passa objeto, sub-objeto e referência. E utiliza o método SET_LOG_WITH_TABLE_RETURN para gravas as mensagens utilizando a estrutura da BAPIRET2. 
+
+  
+
+Mas dado a necessidade, se precisar de outras formas de registrar a mensagem do log, podemos atualizar a classe sem problemas.  
+
+ 
