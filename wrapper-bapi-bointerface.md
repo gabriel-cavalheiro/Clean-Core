@@ -2,7 +2,7 @@ Na construção de API custom e criação/modificações de documentos standard,
 
 https://api.sap.com/content-type/S4HANACloudBOInterface/onstackextensibility/bointerface  
 
-imagem
+ 
 
 Quando utilizar BAPI, deve ser gerado o WRAPPER 
 
@@ -15,15 +15,10 @@ https://community.sap.com/t5/technology-blog-posts-by-sap/how-to-generate-a-wrap
 Dica para buscar o BO interface a partir da BAPI 
 
  
-imagem
 
 Quando houver necessidade de usar algum BAPI da uma conferida nesse ponto -> Normalmente eu verifico no Repositório  
 
-Neste caso ela não esta como not to be released, mais se verificar por aqui nas propriedade do objeto no eclipse 
+<img width="964" height="423" alt="image" src="https://github.com/user-attachments/assets/7f8476f1-361b-472c-816c-11be9c4112e9" />
 
 
-
-Indica o Behavior, acessando você consegue ver a documentação para uso  
-
-
-imagem
+<img width="899" height="857" alt="image" src="https://github.com/user-attachments/assets/6f5c6784-1dd5-40ee-965f-a7b546ac64e3" />
