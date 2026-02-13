@@ -1,8 +1,8 @@
 # ABAP Cloud: Parallel Processing com `CL_ABAP_PARALLEL` (guia prático)
 
 > Referência principal:  
-> - Software-Heroes: *ABAP Cloud – Parallel processing* (2024-04-12)  
-> - Sachin Artani: *Parallel Processing in ABAP Cloud Using CL_ABAP_PARALLEL and RAP EML* (atualizado em 2026-02-05)
+> - Software-Heroes: [*ABAP Cloud – Parallel processing* (2024-04-12)](https://sachinartani.com/blog/parallel-processing-in-abap-cloud)  
+> - Sachin Artani: [*Parallel Processing in ABAP Cloud Using CL_ABAP_PARALLEL and RAP EML* (atualizado em 2026-02-05)](https://sachinartani.com/blog/parallel-processing-in-abap-cloud)
 
 ---
 
