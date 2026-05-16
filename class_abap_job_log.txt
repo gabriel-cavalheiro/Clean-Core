@@ -1,0 +1,381 @@
+CLASS z<aa>cl_appjob_<descricao> DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_apj_dt_exec_object.
+    INTERFACES if_apj_rt_exec_object.
+
+  PROTECTED SECTION.
+
+  PRIVATE SECTION.
+
+*** ===================================================================
+***   Types — declare all types used in method signatures here
+*** ===================================================================
+    TYPES: BEGIN OF ty_<record>,
+             field1 TYPE <type>,
+             field2 TYPE <type>,
+           END OF ty_<record>.
+
+    TYPES ty_t_<record> TYPE STANDARD TABLE OF ty_<record> WITH EMPTY KEY.
+    TYPES ty_r_<range>  TYPE RANGE OF <domain>.
+
+*** ===================================================================
+***   Constants
+*** ===================================================================
+    " Message class — all log messages must come from here (no hardcode)
+    CONSTANTS c_msg_class     TYPE symsgid   VALUE 'Z<AA>_<DESC>'.
+
+    " Application Log Object and Sub-Object (created via Eclipse, not SLG0)
+    CONSTANTS c_log_object    TYPE balobj_d  VALUE 'Z<AA>L_<RICEF>'.
+    CONSTANTS c_log_subobject TYPE balsubobj VALUE 'Z<SUBOBJ>'.
+
+    " Selection defaults
+    CONSTANTS c_bukrs_default TYPE bukrs     VALUE '2481'.
+
+    " Business constants — no magic values anywhere else in the code
+    CONSTANTS c_<value>       TYPE <type>    VALUE '<value>'.
+
+*** ===================================================================
+***   Attributes
+*** ===================================================================
+    " Internal log buffer — filled by m_add_log, persisted by m_save_log
+    DATA t_log TYPE bapirettab.
+
+*** ===================================================================
+***   Methods
+*** ===================================================================
+    " Business methods — prefix M_
+    METHODS m_<process>
+      IMPORTING
+        i_v_<param>       TYPE <type>
+        i_t_<param>       TYPE ty_t_<record>
+      RETURNING
+        VALUE(r_v_result) TYPE abap_bool.
+
+    " Log infrastructure — same in every AppJob class
+    METHODS m_add_log
+      IMPORTING
+        i_v_type   TYPE symsgty
+        i_v_id     TYPE symsgid
+        i_v_number TYPE symsgno
+        i_v_v1     TYPE symsgv DEFAULT space
+        i_v_v2     TYPE symsgv DEFAULT space
+        i_v_v3     TYPE symsgv DEFAULT space
+        i_v_v4     TYPE symsgv DEFAULT space.
+
+    METHODS m_save_log.
+
+ENDCLASS.
+
+
+CLASS z<aa>cl_appjob_<descricao> IMPLEMENTATION.
+
+" =======================================================================
+" JOB INFRASTRUCTURE
+" =======================================================================
+
+  METHOD if_apj_dt_exec_object~get_parameters.
+    " ---------------------------------------------------------------------
+    "                                                                    -
+    "            ********************************************            -
+    "            *                IPIRANGA.                 *            -
+    "            *        CONFIDENCIAL E PROPRIETÁRIO       *            -
+    "            *       TODOS OS DIREITOS RESERVADOS       *            -
+    "            ********************************************            -
+    "                                                                    -
+    " ---------------------------------------------------------------------
+    " NOME DO PROGRAMA    : Z<AA>CL_APPJOB_<DESCRICAO>                   -
+    " TÍTULO DO PROGRAMA  : GET_PARAMETERS                               -
+    " DESCRIÇÃO           : Defines the selection parameters displayed   -
+    "                       on the job scheduling screen.                -
+    " PROGRAMADOR         : <ID/NOME DO DESENVOLVEDOR>                   -
+    " DATA                : DD/MM/YYYY                                   -
+    " REQUEST             : <CÓDIGO DA REQUEST>                          -
+    " RICEF               : <ID DO RICEF>                                -
+    "--------------------------------------------------------------------"
+
+    " ---------------------------------------------------------------
+    " Parameter definition — what appears on the scheduling screen
+    "
+    " kind options:
+    "   if_apj_dt_exec_object=>parameter      → single value (P_*)
+    "   if_apj_dt_exec_object=>select_option  → range       (S_*)
+    " ---------------------------------------------------------------
+    et_parameter_def = VALUE #( mandatory_ind  = abap_true
+                                changeable_ind = abap_true
+                                ( selname    = 'P_BUKRS'
+                                  kind       = if_apj_dt_exec_object=>parameter
+                                  param_text = 'Empresa'
+                                  datatype   = 'BUKRS'
+                                  length     = 4 )
+                                ( selname    = 'P_<PARAM2>'
+                                  kind       = if_apj_dt_exec_object=>select_option
+                                  param_text = '<Label do parâmetro>'
+                                  datatype   = '<DATATYPE>'
+                                  length     = <N> ) ).
+
+    " ---------------------------------------------------------------
+    " Default values pre-filled on the scheduling screen
+    " ---------------------------------------------------------------
+    et_parameter_val = VALUE #( sign   = 'I'
+                                option = 'EQ'
+                                ( selname = 'P_BUKRS'
+                                  kind   = if_apj_dt_exec_object=>parameter
+                                  low    = c_bukrs_default ) ).
+
+  ENDMETHOD.
+
+
+  METHOD if_apj_rt_exec_object~execute.
+    " ---------------------------------------------------------------------
+    "                                                                    -
+    "            ********************************************            -
+    "            *                IPIRANGA.                 *            -
+    "            *        CONFIDENCIAL E PROPRIETÁRIO       *            -
+    "            *       TODOS OS DIREITOS RESERVADOS       *            -
+    "            ********************************************            -
+    "                                                                    -
+    " ---------------------------------------------------------------------
+    " NOME DO PROGRAMA    : Z<AA>CL_APPJOB_<DESCRICAO>                   -
+    " TÍTULO DO PROGRAMA  : EXECUTE                                      -
+    " DESCRIÇÃO           : Main job orchestrator. Reads parameters,     -
+    "                       validates mandatory fields, calls business   -
+    "                       methods and persists the Application Log.    -
+    " PROGRAMADOR         : <ID/NOME DO DESENVOLVEDOR>                   -
+    " DATA                : DD/MM/YYYY                                   -
+    " REQUEST             : <CÓDIGO DA REQUEST>                          -
+    " RICEF               : <ID DO RICEF>                                -
+    "--------------------------------------------------------------------"
+
+    DATA lr_bukrs    TYPE RANGE OF bukrs.
+    DATA lr_<param2> TYPE ty_r_<range>.
+
+*** ---------------------------------------------------------------
+*** Step 1 — Read parameters from it_parameters
+***          Always use LOOP + CASE/WHEN (never direct table read)
+*** ---------------------------------------------------------------
+    LOOP AT it_parameters ASSIGNING FIELD-SYMBOL(<lfs_par>).
+      CASE <lfs_par>-selname.
+        WHEN 'P_BUKRS'.
+          APPEND VALUE #( sign   = <lfs_par>-sign
+                          option = <lfs_par>-option
+                          low    = <lfs_par>-low
+                          high   = <lfs_par>-high ) TO lr_bukrs.
+        WHEN 'P_<PARAM2>'.
+          APPEND VALUE #( sign   = <lfs_par>-sign
+                          option = <lfs_par>-option
+                          low    = <lfs_par>-low
+                          high   = <lfs_par>-high ) TO lr_<param2>.
+      ENDCASE.
+    ENDLOOP.
+
+*** ---------------------------------------------------------------
+*** Step 2 — Validate mandatory parameters
+***          Log error and return — never continue with empty keys
+*** ---------------------------------------------------------------
+    IF lr_bukrs IS INITIAL.
+      m_add_log( i_v_type   = 'E'           " E = Error
+                 i_v_id     = c_msg_class
+                 i_v_number = '001' ).       " MSG 001: Empresa obrigatória
+      m_save_log( ).
+      RETURN.
+    ENDIF.
+
+*** ---------------------------------------------------------------
+*** Step 3 — Log job start (always — helps monitoring in SLG1)
+*** ---------------------------------------------------------------
+    m_add_log( i_v_type   = 'I'             " I = Information
+               i_v_id     = c_msg_class
+               i_v_number = '002'           " MSG 002: Job iniciado para empresa &1
+               i_v_v1     = CONV symsgv( lr_bukrs[ 1 ]-low ) ).
+
+*** ---------------------------------------------------------------
+*** Step 4 — Business logic (delegate to private methods)
+*** ---------------------------------------------------------------
+    DATA(lt_data) = m_<select_data>(
+                      i_v_bukrs = CONV bukrs( lr_bukrs[ 1 ]-low ) ).
+
+    IF lt_data IS INITIAL.
+      m_add_log( i_v_type   = 'I'
+                 i_v_id     = c_msg_class
+                 i_v_number = '003' ).      " MSG 003: Nenhum registro encontrado
+      m_save_log( ).
+      RETURN.
+    ENDIF.
+
+    m_add_log( i_v_type   = 'I'
+               i_v_id     = c_msg_class
+               i_v_number = '004'           " MSG 004: &1 registros encontrados
+               i_v_v1     = CONV symsgv( lines( lt_data ) ) ).
+
+*** ---------------------------------------------------------------
+*** Step 5 — Process record by record
+***          Error on one record must NOT stop the job
+*** ---------------------------------------------------------------
+    LOOP AT lt_data ASSIGNING FIELD-SYMBOL(<lfs_record>).
+
+      IF m_<process>( i_v_<param> = <lfs_record>-field1 ) = abap_true.
+
+        m_add_log( i_v_type   = 'S'         " S = Success
+                   i_v_id     = c_msg_class
+                   i_v_number = '030'       " MSG 030: Documento &1 liberado com sucesso
+                   i_v_v1     = CONV symsgv( <lfs_record>-field1 ) ).
+      ELSE.
+
+        m_add_log( i_v_type   = 'E'         " E = Error (logged, job continues)
+                   i_v_id     = c_msg_class
+                   i_v_number = '031'       " MSG 031: Erro ao processar documento &1
+                   i_v_v1     = CONV symsgv( <lfs_record>-field1 ) ).
+      ENDIF.
+
+    ENDLOOP.
+
+*** ---------------------------------------------------------------
+*** Step 6 — Log job end and persist ALL accumulated messages
+***          m_save_log MUST always be the last call in execute
+*** ---------------------------------------------------------------
+    m_add_log( i_v_type   = 'I'
+               i_v_id     = c_msg_class
+               i_v_number = '005' ).        " MSG 005: Job finalizado
+
+    m_save_log( ).
+
+  ENDMETHOD.
+
+
+" =======================================================================
+" BUSINESS METHODS
+" =======================================================================
+
+  METHOD m_<process>.
+    " ---------------------------------------------------------------------
+    " TÍTULO    : M_<PROCESS>                                             -
+    " DESCRIÇÃO : <What this method does>                                 -
+    "--------------------------------------------------------------------"
+
+    r_v_result = abap_false.
+
+    " ... business logic ...
+
+    r_v_result = abap_true.
+
+  ENDMETHOD.
+
+
+" =======================================================================
+" LOG INFRASTRUCTURE — copy as-is to every new AppJob class
+" =======================================================================
+
+  METHOD m_add_log.
+    " ---------------------------------------------------------------------
+    " TÍTULO    : M_ADD_LOG                                               -
+    " DESCRIÇÃO : Appends a message to the internal buffer t_log.         -
+    "             Does NOT persist — call m_save_log to write to SLG1.   -
+    "--------------------------------------------------------------------"
+
+    " ---------------------------------------------------------------
+    " Message types:
+    "   'E' Error   — processing failed, action needed
+    "   'W' Warning — processed but with caveats
+    "   'I' Info    — neutral progress messages
+    "   'S' Success — record processed successfully
+    " ---------------------------------------------------------------
+    APPEND VALUE bapiret2( type       = i_v_type
+                           id         = i_v_id
+                           number     = i_v_number
+                           message_v1 = i_v_v1
+                           message_v2 = i_v_v2
+                           message_v3 = i_v_v3
+                           message_v4 = i_v_v4 ) TO t_log.
+
+  ENDMETHOD.
+
+
+  METHOD m_save_log.
+    " ---------------------------------------------------------------------
+    " TÍTULO    : M_SAVE_LOG                                              -
+    " DESCRIÇÃO : Persists all messages from t_log to Application Log     -
+    "             (SLG1) and links them to the current job run.           -
+    "             Clears t_log after saving.                              -
+    "--------------------------------------------------------------------"
+
+    DATA lo_head TYPE REF TO if_bali_header_setter.
+    DATA lo_log  TYPE REF TO if_bali_log.
+    DATA lo_db   TYPE REF TO if_bali_log_db.
+
+    " Nothing to save — exit silently
+    IF t_log IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    TRY.
+
+        " Create log header with Object + Sub-Object
+        lo_head = cl_bali_header_setter=>create(
+                    object    = c_log_object
+                    subobject = c_log_subobject ).
+
+        lo_log = cl_bali_log=>create_with_header( lo_head ).
+
+        " Add each buffered message to the log
+        LOOP AT t_log ASSIGNING FIELD-SYMBOL(<lfs_log>).
+
+          DATA(lo_item) = cl_bali_message_setter=>create(
+            severity   = SWITCH #( <lfs_log>-type
+                           WHEN 'E' THEN if_bali_constants=>c_severity_error
+                           WHEN 'W' THEN if_bali_constants=>c_severity_warning
+                           WHEN 'S' THEN if_bali_constants=>c_severity_status
+                           WHEN 'I' THEN if_bali_constants=>c_severity_information
+                           ELSE          if_bali_constants=>c_severity_information )
+            id         = <lfs_log>-id
+            number     = <lfs_log>-number
+            variable_1 = <lfs_log>-message_v1
+            variable_2 = <lfs_log>-message_v2
+            variable_3 = <lfs_log>-message_v3
+            variable_4 = <lfs_log>-message_v4 ).
+
+          lo_log->add_item( lo_item ).
+
+        ENDLOOP.
+
+        " Persist and bind to current job run (visible in "Application Jobs" app)
+        lo_db = cl_bali_log_db=>get_instance( ).
+
+        lo_db->save_log( log                        = lo_log
+                         assign_to_current_appl_job = abap_true ).
+
+        COMMIT WORK.
+
+      CATCH cx_bali_runtime
+            cx_root.
+        " Log persistence failure is non-fatal — job result is preserved
+        RETURN.
+    ENDTRY.
+
+    " Clear buffer after successful save
+    CLEAR t_log.
+
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+**********************************************************************
+* REFERENCE — Message class Z<AA>_<DESC>
+* Create all numbers below before activating the class
+*
+* Nr  | Tp | Text (placeholders: &1 &2 &3 &4)
+* ----|----|-------------------------------------------------
+* 001 |  E | Empresa obrigatória. Informe o parâmetro P_BUKRS.
+* 002 |  I | Job iniciado para empresa &1.
+* 003 |  I | Nenhum registro encontrado para processamento.
+* 004 |  I | &1 registro(s) encontrado(s) para processamento.
+* 005 |  I | Job finalizado.
+* 030 |  S | Documento &1 processado com sucesso.
+* 031 |  E | Erro ao processar documento &1. Verifique o log.
+* 032 |  E | Documento &1: &2
+* 999 |  E | Erro inesperado: &1
+**********************************************************************
