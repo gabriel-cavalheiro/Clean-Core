@@ -1,4 +1,5 @@
 <img width="1645" height="1246" alt="image" src="https://github.com/user-attachments/assets/acbc0ff0-3f56-4d86-a1a6-b01822e7e07a" />
+<img width="1014" height="431" alt="image" src="https://github.com/user-attachments/assets/e6d6f3bd-ea50-404a-8880-22d0216a1f4b" />
 
 
 Na construção de API custom e criação/modificações de documentos standard, priorizar o uso do BO interface (Business Object Interface) em vez da BAPI 
