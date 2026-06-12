@@ -73,30 +73,6 @@ ENDCLASS.
 
 CLASS z<aa>cl_appjob_<descricao> IMPLEMENTATION.
 
-" =======================================================================
-" JOB INFRASTRUCTURE
-" =======================================================================
-
-  METHOD if_apj_dt_exec_object~get_parameters.
-    " ---------------------------------------------------------------------
-    "                                                                    -
-    "            ********************************************            -
-    "            *                IPIRANGA.                 *            -
-    "            *        CONFIDENCIAL E PROPRIETÁRIO       *            -
-    "            *       TODOS OS DIREITOS RESERVADOS       *            -
-    "            ********************************************            -
-    "                                                                    -
-    " ---------------------------------------------------------------------
-    " NOME DO PROGRAMA    : Z<AA>CL_APPJOB_<DESCRICAO>                   -
-    " TÍTULO DO PROGRAMA  : GET_PARAMETERS                               -
-    " DESCRIÇÃO           : Defines the selection parameters displayed   -
-    "                       on the job scheduling screen.                -
-    " PROGRAMADOR         : <ID/NOME DO DESENVOLVEDOR>                   -
-    " DATA                : DD/MM/YYYY                                   -
-    " REQUEST             : <CÓDIGO DA REQUEST>                          -
-    " RICEF               : <ID DO RICEF>                                -
-    "--------------------------------------------------------------------"
-
     " ---------------------------------------------------------------
     " Parameter definition — what appears on the scheduling screen
     "
@@ -130,25 +106,6 @@ CLASS z<aa>cl_appjob_<descricao> IMPLEMENTATION.
 
 
   METHOD if_apj_rt_exec_object~execute.
-    " ---------------------------------------------------------------------
-    "                                                                    -
-    "            ********************************************            -
-    "            *                IPIRANGA.                 *            -
-    "            *        CONFIDENCIAL E PROPRIETÁRIO       *            -
-    "            *       TODOS OS DIREITOS RESERVADOS       *            -
-    "            ********************************************            -
-    "                                                                    -
-    " ---------------------------------------------------------------------
-    " NOME DO PROGRAMA    : Z<AA>CL_APPJOB_<DESCRICAO>                   -
-    " TÍTULO DO PROGRAMA  : EXECUTE                                      -
-    " DESCRIÇÃO           : Main job orchestrator. Reads parameters,     -
-    "                       validates mandatory fields, calls business   -
-    "                       methods and persists the Application Log.    -
-    " PROGRAMADOR         : <ID/NOME DO DESENVOLVEDOR>                   -
-    " DATA                : DD/MM/YYYY                                   -
-    " REQUEST             : <CÓDIGO DA REQUEST>                          -
-    " RICEF               : <ID DO RICEF>                                -
-    "--------------------------------------------------------------------"
 
     DATA lr_bukrs    TYPE RANGE OF bukrs.
     DATA lr_<param2> TYPE ty_r_<range>.
